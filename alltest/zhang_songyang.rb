@@ -19,7 +19,7 @@ class CS253EnumTests < Minitest::Test
     end
 
     def test_cs253chunk
-    	assert_equal [[false, [3, 1]],[true, [4]],[false, [1, 5, 9]],[true, [2, 6]],[false, [5, 3, 5]]], CS253Array.new([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]).cs253chunk{|n|n.even?}
+        assert_equal [[false, [3, 1]],[true, [4]],[false, [1, 5, 9]],[true, [2, 6]],[false, [5, 3, 5]]], CS253Array.new([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]).cs253chunk{|n|n.even?}
         assert_equal [], CS253Array.new([]).cs253chunk{|n|n.even?}
         assert_equal [[false,[3]]], CS253Array.new([3]).cs253chunk{|n|n.even?}
     end
@@ -89,7 +89,7 @@ class CS253EnumTests < Minitest::Test
 
     def test_cs253each_entry
         res = []
-        assert_equal Triple, Triple.new(1,2,3).cs253each_entry{|o| res << o}.class
+        assert_equal Array, Triple.new(1,2,3).cs253each_entry{|o| res << o}.class
         assert_equal [1, 2, 3], res
         res = []
         Triple.new(1,[2,2],3).cs253each_entry{|o| res << o}
@@ -107,7 +107,7 @@ class CS253EnumTests < Minitest::Test
 
     def test_cs253each_with_index
         res = []
-        assert_equal Triple, Triple.new("cat", "dog", "wombat").cs253each_with_index { |item, index| res << [item, index]}.class
+        assert_equal Array, Triple.new("cat", "dog", "wombat").cs253each_with_index { |item, index| res << [item, index]}.class
         assert_equal [["cat",0], ["dog",1], ["wombat",2]], res
         res = []
         CS253Array.new([1,3,4]).cs253each_with_index { |item, index| res << [item, index]}
@@ -139,39 +139,39 @@ class CS253EnumTests < Minitest::Test
     end
     
     def test_cs253find_all
-    	assert_equal [], CS253Array.new([]).cs253find_all { |i| i % 5 == 0 and i % 7 == 0 }
-    	assert_equal [3,6,9], CS253Array.new((1..10).to_a).cs253find_all { |i| i % 3 == 0}
-    	assert_equal [2],Triple.new(1,2,3).cs253find_all { |num|  num.even?  } 
+        assert_equal [], CS253Array.new([]).cs253find_all { |i| i % 5 == 0 and i % 7 == 0 }
+        assert_equal [3,6,9], CS253Array.new((1..10).to_a).cs253find_all { |i| i % 3 == 0}
+        assert_equal [2],Triple.new(1,2,3).cs253find_all { |num|  num.even?  } 
     end
 
     def test_cs253find_index
-    	assert_equal 2, CS253Array.new((1..10).to_a).cs253find_index { |i| i % 3 == 0}
-    	assert_equal 2, CS253Array.new((1..10).to_a).cs253find_index(3)
-    	assert_equal 1, Triple.new(1,2,3).cs253find_index { |num|  num.even?  }
+        assert_equal 2, CS253Array.new((1..10).to_a).cs253find_index { |i| i % 3 == 0}
+        assert_equal 2, CS253Array.new((1..10).to_a).cs253find_index(3)
+        assert_equal 1, Triple.new(1,2,3).cs253find_index { |num|  num.even?  }
     end
 
     def test_cs253first
-    	assert_nil CS253Array.new([]).cs253first
-    	assert_equal [], CS253Array.new([]).cs253first(10)
-    	assert_equal ["foo", "bar"], CS253Array.new(%w[foo bar baz]).cs253first(2)
+        assert_nil CS253Array.new([]).cs253first
+        assert_equal [], CS253Array.new([]).cs253first(10)
+        assert_equal ["foo", "bar"], CS253Array.new(%w[foo bar baz]).cs253first(2)
     end
     
     def test_cs253flat_map
-    	assert_equal [1, -1, 2, -2, 3, -3, 4, -4], CS253Array.new([1, 2, 3, 4]).cs253flat_map { |e| [e, -e] }
-    	assert_equal [1, 2, 100, 3, 4, 100], CS253Array.new([[1, 2], [3, 4]]).cs253flat_map { |e| e + [100] }
-    	assert_equal [1,100,2,100,3,100], Triple.new(1,2,3).cs253flat_map {|e| [e]+[100]}
+        assert_equal [1, -1, 2, -2, 3, -3, 4, -4], CS253Array.new([1, 2, 3, 4]).cs253flat_map { |e| [e, -e] }
+        assert_equal [1, 2, 100, 3, 4, 100], CS253Array.new([[1, 2], [3, 4]]).cs253flat_map { |e| e + [100] }
+        assert_equal [1,100,2,100,3,100], Triple.new(1,2,3).cs253flat_map {|e| [e]+[100]}
     end
     
     def test_cs253grep
-    	assert_equal [38, 39, 40, 41, 42, 43, 44], CS253Array.new((1..100).to_a).cs253grep(38..44)
-    	assert_equal [39, 40, 41, 42, 43, 44, 45], CS253Array.new((1..100).to_a).cs253grep(38..44){|e|e+1} 
-    	assert_equal [2,3], Triple.new(1,2,3).cs253grep(2..3)
+        assert_equal [38, 39, 40, 41, 42, 43, 44], CS253Array.new((1..100).to_a).cs253grep(38..44)
+        assert_equal [39, 40, 41, 42, 43, 44, 45], CS253Array.new((1..100).to_a).cs253grep(38..44){|e|e+1} 
+        assert_equal [2,3], Triple.new(1,2,3).cs253grep(2..3)
     end
     
     def test_cs253grep_v
-    	assert_equal [1, 6, 7, 8, 9, 10], CS253Array.new((1..10).to_a).cs253grep_v(2..5)
-    	assert_equal [2, 12, 14, 16, 18, 20], CS253Array.new((1..10).to_a).cs253grep_v(2..5) { |v| v * 2 }
-    	assert_equal [1], Triple.new(1,2,3).cs253grep_v(2..3)
+        assert_equal [1, 6, 7, 8, 9, 10], CS253Array.new((1..10).to_a).cs253grep_v(2..5)
+        assert_equal [2, 12, 14, 16, 18, 20], CS253Array.new((1..10).to_a).cs253grep_v(2..5) { |v| v * 2 }
+        assert_equal [1], Triple.new(1,2,3).cs253grep_v(2..3)
     end
 
     def test_cs253group_by
@@ -363,7 +363,7 @@ class CS253EnumTests < Minitest::Test
         a = CS253Array.new([ 4, 5, 6 ])
         b = CS253Array.new([ 7, 8, 9 ])
         assert_equal [[4, 7], [5, 8], [6, 9]], a.cs253zip(b)
-        assert_equal [[1, 4, 7], [2, 5, 8], [3, 6, 9]], [1, 2, 3].cs253zip(a, b)
+        assert_equal [[1, 4, 7], [2, 5, 8], [3, 6, 9]], CS253Array.new([1, 2, 3]).cs253zip(a, b)
         c = []
         a.cs253zip(b) { |x, y| c << x + y }
         assert_equal [11, 13, 15], c
