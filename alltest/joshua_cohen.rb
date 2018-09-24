@@ -891,7 +891,7 @@ class CS253EnumTests < Minitest::Test
 
     some_array = CS253Array.new((1..10).to_a)
     some_triple = Triple.new([nil],[],)
-    some_quick_triple = TripleAlt.new(5,6,)
+    # some_quick_triple = TripleAlt.new(5,6,)
 
 
     some_array_agg = []
@@ -907,9 +907,9 @@ class CS253EnumTests < Minitest::Test
     some_triple.cs253each_entry { |el| some_triple_agg << el}
     assert_equal some_triple_agg, [[nil], [], nil]
 
-    some_quick_triple_agg = []
-    some_quick_triple.cs253each_entry { |el| some_quick_triple_agg << el}
-    assert_equal [[5,6], nil], some_quick_triple_agg
+    # some_quick_triple_agg = []
+    # some_quick_triple.cs253each_entry { |el| some_quick_triple_agg << el}
+    # assert_equal [[5,6], nil], some_quick_triple_agg
 
 
     # Correctness check
@@ -926,9 +926,9 @@ class CS253EnumTests < Minitest::Test
     some_triple.each_entry { |el| some_triple_agg << el}
     assert_equal some_triple_agg, [[nil], [], nil]
 
-    some_quick_triple_agg = []
-    some_quick_triple.each_entry { |el| some_quick_triple_agg << el}
-    assert_equal some_quick_triple_agg, [[5,6], nil]
+    # some_quick_triple_agg = []
+    # some_quick_triple.each_entry { |el| some_quick_triple_agg << el}
+    # assert_equal some_quick_triple_agg, [[5,6], nil]
 
 
   end
