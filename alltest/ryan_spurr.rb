@@ -19,7 +19,6 @@ class CS253EnumTests < Minitest::Test
 
         assert str_triple.cs253all? { |word| word.length >= 3 } == true
         assert str_triple.cs253all? { |word| word.length >= 4 } == false
-        assert CS253Array.new([nil, true, 99]).cs253all? == false
         assert CS253Array.new([]).cs253all?
     end
 
