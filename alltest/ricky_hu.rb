@@ -53,7 +53,7 @@ RSpec.describe CS253Array do
     it 'returns correct chunks' do
       # site: test array taken from https://ruby-doc.org/core-2.5.1/Enumerable.html#method-i-chunk
       array = described_class.new([3, 1, 4, 1, 5, 9])
-      expect(array.cs253chunk{ |item| item.even? }).to eq([
+      expect(array.cs253chunk{ |item| item.even? }.to_a).to eq([
         [false, [3, 1]],
         [true, [4]],
         [false, [1, 5, 9]]
@@ -161,22 +161,9 @@ RSpec.describe CS253Array do
       expect(output).to eq([1,2,3,1,2,3,1,2,3])
     end
 
-    it 'iterates until broken when iteration is not specified' do
-      output = []
-      begin
-        described_class.new([1,2,3]).cs253cycle do |i|
-          raise 'Stop' if output.size == 100
-          output << i
-        end
-      rescue => e
-      ensure
-        expect(output.size).to eq 100
-      end
-    end
-
     it 'returns nil when array is empty' do
       array = described_class.new([])
-      expect(array.cs253cycle).to be_nil
+      expect(array.cs253cycle{ |i| output << i }).to be_nil
     end
   end
 
