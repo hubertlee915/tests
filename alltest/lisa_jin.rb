@@ -80,20 +80,6 @@ class CS253EnumTests < Minitest::Test
         assert_equal SIMPLE_T.cs253any?{ |x| x < 1 }, false
     end
 
-    def test_chunk
-        arr = CS253Array.new([1,2,2,3,3,3])
-        out = enum_to_a(arr.cs253chunk{ |x| x.even? })
-        assert_equal out, [[1],[2,2],[3,3,3]]
-    end
-
-    def test_chunk_str
-        assert_equal enum_to_a(FRUIT_STR_A.cs253chunk{ |x| x[0] == 'a' }), [['apple'], ['peach', 'pear', 'plum']]
-    end
-
-    def test_chunk_tr
-        assert_equal enum_to_a(SIMPLE_STR_T.cs253chunk{ |x| x.length < 4 }), [['one', 'two'], ['three']]
-    end
-
     def test_chunk_while_str
         out = enum_to_a(ANIMAL_STR_A.cs253chunk_while{ |a, b| a[0].ord >= b[0].ord })
         assert_equal out, [['aardvark', 'anteater'], ['boar', 'bat']]
@@ -147,21 +133,6 @@ class CS253EnumTests < Minitest::Test
 
     def test_count_str
         assert_equal FRUIT_STR_A.cs253count, 4
-    end
-
-    def test_cycle
-        assert_equal enum_to_a(SIMPLE_A.cs253cycle(2) { |x| x }), \
-            [1,2,3,1,2,3]
-    end
-
-    def test_cycle_tr
-        assert_equal enum_to_a(SIMPLE_T.cs253cycle(1) { |x| x ** 2 }), \
-            [1,4,9]
-    end
-
-    def test_cycle_str
-        assert_equal enum_to_a(SIMPLE_STR_T.cs253cycle(0) { |x| x }), \
-            []
     end
 
     def test_detect
@@ -242,7 +213,7 @@ class CS253EnumTests < Minitest::Test
     end
 
     def test_each_entry3
-        out = [] 
+        out = []
         EachEntryTester3.new.cs253each_entry{ |x| out << x }
         assert_equal out, [nil]
     end
@@ -678,11 +649,6 @@ class CS253EnumTests < Minitest::Test
         assert_equal enum_to_a(SIMPLE_T.cs253slice_when{ |a, b| b <= a }), [[1,2,3]]
     end
 
-    def test_sort
-        arr = CS253Array.new([7,8,4,6,1,10])
-        assert_equal arr.cs253sort, [1,4,6,7,8,10]
-    end
-
     def test_sort_str
         assert_equal RUSS_AUTH_STR_A.cs253sort{ |a, b| a[0].ord <=> b[0].ord }, \
             ['Chekhov', 'Dostoyevsky', 'Nabokov']
@@ -718,18 +684,6 @@ class CS253EnumTests < Minitest::Test
 
     def test_sum_tr
         assert_equal MULT5_T.cs253sum, 30
-    end
-
-    def test_size_tr
-        assert_equal SIMPLE_T.cs253size, 3
-    end
-
-    def test_size_str
-        assert_equal ANIMAL_STR_A.cs253size, 4
-    end
-
-    def test_size
-        assert_equal RANGE_A9.cs253size, 9
     end
 
     def test_to_a
