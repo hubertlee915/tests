@@ -1,502 +1,490 @@
-#!/usr/bin/ruby
-#
 require 'minitest/autorun'
 require_relative 'cs253Array.rb'
-require_relative  'triple.rb'
+require_relative 'triple.rb'
 
 class CS253EnumTests < Minitest::Test
     def test_collect
         int_triple = CS253Array.new([1, 2, 3])
         str_triple = CS253Array.new(["string", "anotherString", "lastString"])
 
-        assert_equal int_triple.cs253collect{|i| i*2},[2,4,6]
-        assert_equal int_triple.cs253collect{|i| i.to_s}.to_a,["1","2","3"]
-        assert_equal str_triple.cs253collect{|i| i.length}.to_a,[6,13,10]
-    end
-    # more tests!
-    def test_all?
-        x1 = CS253Array.new([1, 1, nil])
-        x2 = CS253Array.new([1, 1, 1])
-        x3 = CS253Array.new(['ant', 'bear', 'cat'])
-
-        assert_equal x1.cs253all?{|i| i}, [1, 1, nil].all?{|i| i}
-        assert_equal x2.cs253all?{|i| i}, [1, 1, 1].all?{|i| i}
-        assert_equal x3.cs253all?{ |word| word.length >= 4 }, ['ant', 'bear', 'cat'].all?{ |word| word.length >= 4 }
+        assert_equal int_triple.collect{|i| i.to_s}.to_a,["1","2","3"]
+        assert_equal str_triple.collect{|i| i.length}.to_a,[6,13,10]
     end
 
-    def test_any?
-        x1 = CS253Array.new([1, nil, nil])
-        x2 = CS253Array.new([1, 1, 1])
-        x3 = CS253Array.new(['ant','bear', 'cat'])
+    def test_cs253all?
+        int_triple = CS253Array.new([1, 2, 3])
+        str_triple = CS253Array.new(["string", "anotherString", "lastString"])
+        other_triple = CS253Array.new([nil,true,99])
 
-        assert_equal x1.cs253any?{|i| i}, [1, nil, nil].any?{|i| i}
-        assert_equal x2.cs253any?{|i| i}, [1, 1, 1].any?{|i| i}
-        assert_equal x3.cs253any?{ |word| word.length >= 4 }, ['ant', 'bear', 'cat'].any?{ |word| word.length >= 4 }
+        # assert_equal true, int_triple.cs253all?(Numeric)
+        assert_equal false, other_triple.cs253all?
+        assert_equal true , CS253Array.new([]).cs253all?
+        assert_equal true, str_triple.cs253all?{|word| word.length >= 4}
+        # assert_equal true, str_triple.cs253all?(/t/)
     end
 
-    def test_chunk
-        x1 = CS253Array.new([3, 1, 5, 6])
-        assert_equal x1.cs253chunk {|n| n > 2}, [[true, [3]], [false, [1]], [true, [5, 6]]]
-        assert_equal x1.cs253chunk {|n| n % 2 == 0}, [[false, [3, 1, 5]], [true, [6]]]
-        assert_equal x1.cs253chunk {|n| n.even?}, [[false, [3, 1, 5]], [true, [6]]]
+    def test_cs253any?
+        int_triple = CS253Array.new([1, 2, true])
+        str_triple = CS253Array.new(["string", "anotherString", "lastString"])
+        other_triple = CS253Array.new([nil,true,99])
+
+        # assert_equal true, int_triple.cs253any?(Integer)
+        assert_equal true, other_triple.cs253any?
+        assert_equal false , CS253Array.new([]).cs253any?
+        assert_equal true, str_triple.cs253any?{|word| word.length >= 4}
+        # assert_equal true, str_triple.cs253any?(/t/)
+    end
+    def test_cs253chunk
+        int_triple = CS253Array.new([3,1,4])
+        str_triple = CS253Array.new(["string", "anotherString", "lastString"])
+        assert_equal [[false, ["string"]], [true, ["anotherString", "lastString"]]],str_triple.cs253chunk{|e| e.length > 6}
+        assert_equal [[true,[3,1]],[false,[4]]] , int_triple.cs253chunk{|n| n.odd?}
+        assert_equal [[false,[3,1]],[true,[4]]]  , int_triple.cs253chunk{|n| n.even?}
     end
 
-    def test_chunk_while
-        a = CS253Array.new([1,2,4])
-        assert_equal a.cs253chunk_while{|i, j|j == i+1}, [1,2,4].chunk_while{|i, j|j==i+1}.to_a#[[1,2], [4]]
-        assert_equal a.cs253chunk_while{|i, j|j > i}, [[1,2,4]]
-        assert_equal a.cs253chunk_while{|i, j| i*j <6}, [[1, 2], [4]]
+    def test_cs253chunk_while
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [[1,2],[4]], int_triple.cs253chunk_while{|i,j| i+1 == j}
+        assert_equal [["string", "another"],["lastString"]], str_triple.cs253chunk_while{|i,j| i.length+1 == j.length}
+        assert_equal [[1],[2,4]] , int_triple.cs253chunk_while{|i,j| i+2 == j}
+    end
+    def test_cs253collect
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+
+        assert_equal [1,4,16], int_triple.cs253collect{|i| i*i}
+        assert_equal ['cat','cat','cat'] ,int_triple.cs253collect{|i| 'cat'}
+        assert_equal [6,7,10] , str_triple.cs253collect{|i| i.length}
+    end
+    def test_cs253collect_concat
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new(["string"], ["another"], ["lastString"])
+        arr_triple = Triple.new([1,2],[4],[5])
+        assert_equal [-1,1,-2,2,-4,4] , int_triple.cs253collect_concat{|i| [-i,i]}
+        assert_equal [1,2,100,4,100,5,100], arr_triple.cs253collect_concat{|i| i+[100]}
+        assert_equal ["string",'test', "another",'test', "lastString",'test'] ,str_triple.cs253collect_concat{|i| i +['test']}
+    end
+    def test_cs253collect
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+
+        assert_equal 3 , int_triple.cs253count
+        assert_equal 3 , str_triple.cs253count
+        assert_equal 2 ,int_triple.cs253count{|x|x%2==0}
+        assert_equal 1,int_triple.cs253count(2)
+
+    end
+    def test_cs253cycle
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        a = []
+        int_triple.cs253cycle(2){|x| a<<x}
+        b = []
+        str_triple.cs253cycle(3){|x|b<<x}
+        # assert_equal  [], a
+        c = []
+        int_triple.cs253cycle(3){|x|c<<x*2}
+        assert_equal [1,2,4,1,2,4] , a
+        assert_equal ["string", "another", "lastString", "string", "another", "lastString", "string", "another", "lastString"],b
+        assert_equal [2, 4, 8, 2, 4, 8, 2, 4, 8],c
+    end
+    def test_cs253detect
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "anothe", "lastString")
+
+        assert_equal 4 , int_triple.cs253detect{|x|x==4}
+        assert_equal 2 , int_triple.cs253detect{|x|x%2==0}
+        assert_equal 'string' , str_triple.cs253detect{|x| x.length == 6}
+
+    end
+    def test_cs253drop
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "anothe", "lastString")
+        assert_equal [4] ,int_triple.cs253drop(2)
+        assert_equal [2,4],int_triple.cs253drop(1)
+        assert_equal ["string", "anothe", "lastString"] , str_triple.cs253drop(0)
+        
+    end
+    def test_cs253drop_while
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [2,4] ,int_triple.cs253drop_while{|x|x<2}
+        assert_equal ["another", "lastString"] , str_triple.cs253drop_while{|x|x.length < 7}
+        assert_equal ["lastString"] , str_triple.cs253drop_while{|x|x.length < 8}
+
+    end 
+    def test_cs253each_cons
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        #todo
+        a=[]
+        b=[]
+        c=[]
+        int_triple.cs253each_cons(2){|x| a<<x }
+        str_triple.cs253each_cons(2){|x| b<<x }
+        str_triple.cs253each_cons(1){|x| c<<x }
+        assert_equal [[1,2],[2,4]] , a
+        assert_equal [["string", "another"],["another", "lastString"]] , b
+        assert_equal [["string"],["another"],["lastString"]], c
+        
+    end
+    def test_cs253each_entry
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        int2_triple = Triple.new(1,3)
+        a=[]
+        b = []
+        c = []
+        int_triple.cs253each_entry{|x|a<<x}
+        str_triple.cs253each_entry{|x|b<<x}
+        int2_triple.cs253each_entry{|x|c<<x}
+        assert_equal [1, 2, 4] , a
+        assert_equal ["string", "another", "lastString"], b
+        assert_equal [1, 3, nil], c
+    end
+    def test_cs253each_slice
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        # todo
+        # assert_equal [[1,2],[4]] ,int_triple.cs253each_slice(2)
+        # assert_equal [[1],[2],[4]],int_triple.cs253each_slice(1)
+        # assert_equal [["string", "another"],["lastString"]] , str_triple.cs253each_slice(2)
+    end
+    def test_cs253each_with_index
+        int_triple = Triple.new(1,2,4)
+        int2_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        a = Hash.new
+        b = Hash.new
+        c = Hash.new
+        int_triple.cs253each_with_index{|it,index|a[it]=index}
+        str_triple.cs253each_with_index{|it,index|b[it]=index}
+        int2_triple.cs253each_with_index{|it,index|c[it]=index}
+        assert_equal [[1,0],[2,1],[4,2]] , a.to_a
+        
+        assert_equal [["string",0],["another",1],["lastString",2]] , b.to_a
+        
+        assert_equal [[1, 0], [2, 1], [4, 2]], c.to_a
+        
     end
 
-    def test_collect_concat
-        a = CS253Array.new([[1,[2]],[3,4]])
-        b = CS253Array.new([[1,2],[3,4]])
-        assert_equal a.cs253collect_concat{|i| i}, [[1,[2]],[3,4]].collect_concat{|i| i}
-        assert_equal b.cs253collect_concat{|i| i}, [[1,2],[3,4]].collect_concat{|i| i}
-        assert_equal b.cs253collect_concat{|i| i+[10]}, [[1,2],[3,4]].collect_concat{|i| i+[10]}
-    end
+    def test_cs253each_with_object
 
-    def test_count
-        a = CS253Array.new([1, 2, 3, 4])
-        assert_equal a.cs253count{|i| i}, [1, 2, 3, 4].count{|i| i}
-        assert_equal a.cs253count{|i| i%2 == 0}, [1, 2, 3, 4].count{|i| i%2 == 0}
-        assert_equal a.cs253count{|i| i == 2}, [1, 2, 3, 4].count{|i| i == 2}
-    end
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
 
-    def test_cycle
-        a = ["a", "b", "c"]
-        b = CS253Array.new(a)
-        assert_nil b.cs253cycle(2){|i| i}
-        assert_nil b.cs253cycle(100){|i| i}
-        assert_nil b.cs253cycle(2){|i| i + "2"}
-    end
-
-    def test_detect
-        a = CS253Array.new([1, 2, 3, 4])
-        assert_equal a.cs253detect{|i| i % 2 == 0}, [1, 2, 3, 4].detect{|i| i % 2 == 0}
-        assert_nil a.cs253detect{|i| i == 0}
-        assert_equal a.cs253detect{|i| i == 2}, [1, 2, 3, 4].detect{|i| i == 2}
-    end
-
-    def test_drop
-        a = CS253Array.new([1, 2, 3, 4, 5, 0])
-        assert_equal a.cs253drop(1), [1, 2, 3, 4, 5, 0].drop(1)
-        assert_equal a.cs253drop(0), [1, 2, 3, 4, 5, 0].drop(0)
-        assert_equal a.cs253drop(10), [1, 2, 3, 4, 5, 0].drop(10)
-    end
-
-    def test_drop_while
-        a = CS253Array.new([1, 2, 3, 4, 5, 0])
-        assert_equal a.cs253drop_while{|x| x>3 }, [1, 2, 3, 4, 5, 0].drop_while {|x| x>3 }
-        assert_equal a.cs253drop_while{|x| x<3 }, [1, 2, 3, 4, 5, 0].drop_while {|x| x<3 }
-        assert_equal a.cs253drop_while{|x| x<6 }, [1, 2, 3, 4, 5, 0].drop_while {|x| x<6 }
-    end
-
-    def test_each_cons
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_nil a1.cs253each_cons(3){|x| x}
-        assert_nil a1.cs253each_cons(10){|x| x}
-        # assert_nil a1.each_cons(4){|x| x + 2}
-    end
-
-    def test_each_entry
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253each_entry{|e| e}, a.each_entry{|e| e}.to_a
-        assert_equal a1.cs253each_entry{|e| e+2}, a.each_entry{|e| e+2}.to_a
-        assert_equal a1.cs253each_entry{|e| e*2}, a.each_entry{|e| e*2}.to_a
-    end
-
-    def test_each_slice
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_nil a1.cs253each_slice(4){|e| e}
-        assert_nil a1.cs253each_slice(10){|x| x}
-        # assert_nil a1.cs253each_slice(10){|x| x+10}
-    end
-
-    def test_each_with_index
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.each_with_index{|x, idx| x}, a.each_with_index{|x, idx| x}.to_a
-        assert_equal a1.each_with_index{|x, idx| x + 1}, a.each_with_index{|x, idx| x + 1}.to_a
-        assert_equal a1.each_with_index{|x, idx| x + idx}, a.each_with_index{|x, idx| x + idx}.to_a
-    end
-
-    def test_each_with_object
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253each_with_object({:sum => 0}) {|i,hsh| hsh[:sum] += i}, a.each_with_object({:sum => 0}) {|i,hsh| hsh[:sum] += i}
-        assert_equal a1.cs253each_with_object(0) {|i,sum| sum += i}, a.each_with_object(0) {|i,sum| sum += i}
-        assert_equal a1.cs253each_with_object(10) {|i,sum| sum += i}, a.each_with_object(10) {|i,sum| sum += i}
-    end
-
-    def test_entries
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      s = CS253Array.new(["a", "b"])
-      t = CS253Array.new([1, "b"])
-      assert_equal a1.cs253entries, a.entries
-      assert_equal s.cs253entries, ["a", "b"].entries
-      assert_equal t.cs253entries, [1, "b"].entries
-    end
-
-    def test_find
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      assert_equal a1.cs253find{ |i| i % 5 == 0 }, a.find{ |i| i % 5 == 0 }
-      assert_equal a1.cs253find{ |i| i % 10 == 0 }, a.find{ |i| i % 10 == 0 }
-      assert_equal a1.cs253find(2){ |i| i % 5 == 0 }, a.find(2){ |i| i % 5 == 0 }
-    end
-
-      def test_find_all
-          a =[1, 2, 3, 4, 5, 0]
-          a1 = CS253Array.new(a)
-          assert_equal a1.cs253find_all{ |i| i % 2 == 0 }, a.find_all{ |i| i % 2 == 0 }
-          assert_equal a1.cs253find_all{ |i| i >1 }, a.find_all{ |i| i > 1 }
-          assert_equal a1.cs253find_all{ |i| i % 10 == 0 }, a.find_all{ |i| i % 10 == 0 }
-      end
-
-  def test_find_index
-    a =[1, 2, 3, 4, 5, 0]
-    a1 = CS253Array.new(a)
-    assert_equal a1.cs253find_index{ |i| i % 2 == 0 }, a.find_index{ |i| i % 2 == 0 }
-    assert_nil a1.cs253find_index{ |i| i >10 }
-    assert_equal a1.cs253find_index(2), a.find_index(2)
-  end
-
-  def test_first
-      a =[]
-      a1 = CS253Array.new(a)
-      assert_equal a1.cs253first(2), a.first(2)
-      assert_nil a1.cs253first, a.first
-      s =[1, 2, 3, 4, 5, 0]
-      s1 = CS253Array.new(s)
-
-      assert_equal s1.cs253first(10), s.first(10)
-
-  end
-
- def test_flap_map
-     a = [[1, 2], [3, 4]]
-     a1 = CS253Array.new(a)
-     s = [["1","2"],["3","4"]]
-     s1 = CS253Array.new(s)
-     assert_equal a1.cs253flat_map{ |e| e }, a.flat_map{ |e| e}
-     assert_equal a1.cs253flat_map{ |e| e +[10]}, a.flat_map{ |e| e + [10]}
-     assert_equal s1.flat_map {|i| i[0] }, s.flat_map {|i| i[0] }
- end
-
- def test_grep
-     a = [1,10,100,1000]
-     a1 = CS253Array.new(a)
-     assert_equal a1.cs253grep(1..100), a.grep((1..100))
-     assert_equal a1.cs253grep(1..100){|x|x*2}, a.grep((1..100)){|x|x*2}
-     assert_equal a1.cs253grep(102){|x|x*2}, a.grep(102){|x|x*2}
- end
-
-    def test_grep_v
-        a = [1,10,100,1000]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253grep_v(1..100), a.grep_v((1..100))
-        assert_equal a1.cs253grep_v(1..100){|x|x*2}, a.grep_v((1..100)){|x|x*2}
-        assert_equal a1.cs253grep_v(102){|x|x*2}, a.grep_v(102){|x|x*2}
-    end
-
-    def test_group_by
-        a =[1, 2, 3, 4, 5, 0]
-        a1= CS253Array.new(a)
-        assert_equal a1.cs253group_by{ |i| i%3 }, a.group_by{ |i| i%3 }
-        assert_equal a1.cs253group_by{ |i| i>3 }, a.group_by{ |i| i>3 }
-        assert_equal a1.cs253group_by{ |i| i==1 }, a.group_by{ |i| i==1 }
-    end
-
-    def test_include?
-        a = [ "a", "b", "c" ]
-        a1 = CS253Array.new(a)
-
-        assert_equal a1.cs253include?("a"), a.include?("a")
-        assert_equal a1.cs253include?("d"), a.include?("d")
-        assert_equal a1.cs253include?("b"), a.include?("b")
-    end
-
-    def test_inject
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253inject{|sum, n| sum + n }, a.inject{ |sum, n| sum + n }
-        assert_equal a1.cs253inject(0){|sum, n| sum + n }, a.inject(0){ |sum, n| sum + n }
-        assert_equal a1.cs253inject(3){|sum, n| sum - n }, a.inject(3){ |sum, n| sum - n }
-    end
-
-    def test_map
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253map{|x| x+2}, a.map{|x| x + 2}
-        assert_equal a1.cs253map{|x| x-2}, a.map{|x| x - 2}
-        assert_equal a1.cs253map{|x| x*2}, a.map{|x| x * 2}
-    end
-
-    def test_member?
-        a = [ "a", "b", "c" ]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253member?("a"), a.member?("a")
-        assert_equal a1.cs253member?("d"), a.member?("d")
-        assert_equal a1.member?("b"), a.member?("b")
-    end
-
-    def test_max
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      s = ["string", "anotherString", "lastString"]
-      s1 = CS253Array.new(s)
-      assert_equal a1.cs253max(6), a.max(6)
-      assert_equal a1.cs253max(5){|a, b| a <=> b}, a.max(5){|a, b| a <=> b}
-      assert_equal s1.cs253max(5){|a, b| a.length <=> b.length}, s.max(5){|a, b| a.length <=> b.length}
-    end
-
-    def test_max_by
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      s = ["string", "anotherString", "lastString"]
-      s1 = CS253Array.new(s)
-      assert_equal a1.cs253max_by{|a| a}, a.max_by{|a| a}
-      assert_equal a1.cs253max_by(5){|a| a}, a.max_by(5){|a| a}
-      assert_equal s1.cs253max_by(5){|a| a.length }, s.max_by(5){|a| a.length}
-    end
-
-    def test_min
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      s = ["string", "anotherString", "lastString"]
-      s1 = CS253Array.new(s)
-      assert_equal a1.cs253min(6), a.min(6)
-      assert_equal a1.cs253min(5){|a, b| a <=> b}, a.min(5){|a, b| a <=> b}
-      assert_equal s1.cs253min(5){|a, b| a.length <=> b.length}, s.min(5){|a, b| a.length <=> b.length}
-    end
-
-    def test_min_by
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      s = ["string", "anotherString", "lastString"]
-      s1 = CS253Array.new(s)
-      assert_equal a1.cs253min_by{|a| a}, a.min_by{|a| a}
-      assert_equal a1.cs253min_by(5){|a| a}, a.min_by(5){|a| a}
-      assert_equal s1.cs253min_by(5){|a| a.length }, s.min_by(5){|a| a.length}
-    end
-
-    def test_minmax
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        s = ["string", "anotherString", "lastString"]
-        s1 = CS253Array.new(s)
-
-        assert_equal a1.cs253minmax{|a, b| a <=> b}, a.minmax{|a, b| a <=> b}
-        assert_equal s1.cs253minmax{|a, b| a <=> b}, s.minmax{|a, b| a <=> b}
-        assert_equal s1.cs253minmax{|a, b| a.length <=> b.length}, s.minmax{|a, b| a.length <=> b.length}
-    end
-
-    def test_minmax_by
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        s = ["string", "anotherString", "lastString"]
-        s1 = CS253Array.new(s)
-
-        assert_equal a1.cs253minmax_by{|a| a}, a.minmax_by{|a| a}
-        assert_equal s1.cs253minmax_by{|a| a}, s.minmax_by{|a| a}
-        assert_equal s1.cs253minmax_by{|a| a.length}, s.minmax_by{|a| a.length}
-    end
-
-
-
-    def test_none?
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-
-        assert_equal a1.cs253none?{|x| x > 1}, a.none?{|x| x>1}
-        assert_equal a1.cs253none?{|x| x > 10}, a.none?{|x| x>10}
-        assert_equal a1.cs253none?{|x| x == 1}, a.none?{|x| x==1}
-    end
-
-    def test_one?
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-
-        assert_equal a1.cs253one?{|x| x > 1}, a.one?{|x| x>1}
-        assert_equal a1.cs253one?{|x| x > 10}, a.one?{|x| x>10}
-        assert_equal a1.cs253one?{|x| x == 1}, a.one?{|x| x==1}
-    end
-
-    def test_partition
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      assert_equal a1.cs253partition{|x| x > 1}, a.partition{|x| x>1}
-      assert_equal a1.cs253partition{|x| x > 10}, a.partition{|x| x>10}
-      assert_equal a1.cs253partition{|x| x <5}, a.partition{|x| x<5}
-    end
-
-    def test_reduce
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253reduce{|sum, n| sum + n }, a.reduce{ |sum, n| sum + n }
-        assert_equal a1.cs253reduce(0){|sum, n| sum + n }, a.reduce(0){ |sum, n| sum + n }
-        assert_equal a1.cs253reduce(3){|sum, n| sum - n }, a.reduce(3){ |sum, n| sum - n }
-    end
-
-    def test_reject
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253reject{|x| x > 0}, a.reject{|x| x > 0}
-        assert_equal a1.cs253reject{|x| x == 0}, a.reject{|x| x == 0}
-        assert_equal a1.cs253reject{|x| x < 5}, a.reject{|x| x < 5}
-    end
-
-    def test_reverse_each
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      assert_equal a1.cs253reverse_each{|x| x*2},a.reverse_each {|x| x*2}
-      assert_equal a1.cs253reverse_each{|x| x},a.reverse_each {|x| x}
-      assert_equal a1.cs253reverse_each{|x| x>0},a.reverse_each {|x| x>0}
-    end
-
-    def test_select
-        s1 = CS253Array.new([1,2,3,4,5,6,7,8,9,10])
-        s2 = CS253Array.new(["string", "anotherString", "lastString"])
-        assert_equal s1.cs253select{|e| e  == 1}, [1,2,3,4,5,6,7,8,9,10].select{|e| e  == 1}
-        assert_equal s1.cs253select{|e| e % 2 == 0}, [1,2,3,4,5,6,7,8,9,10].select{|e| e % 2 == 0}
-        assert_equal s2.cs253select{|e| e.length >7}, ["string", "anotherString", "lastString"].select{|e| e.length > 7}
-    end
-
-    def test_slice_after
-      s1 = CS253Array.new([1,2,3,4,5,6,7,8,9,10])
-      s2 = CS253Array.new(["string", "anotherString", "lastString"])
-      assert_equal s1.cs253slice_after{|e| e  == 1}, [1,2,3,4,5,6,7,8,9,10].slice_after{|e| e  == 1}.to_a
-      assert_equal s1.cs253slice_after{|e| e  == 5}, [1,2,3,4,5,6,7,8,9,10].slice_after{|e| e  == 5}.to_a
-      assert_equal s1.cs253slice_after{|e| e  == 9}, [1,2,3,4,5,6,7,8,9,10].slice_after{|e| e  == 9}.to_a
-    end
-
-    def test_slice_before
-      s1 = CS253Array.new([1,2,3,4,5,6,7,8,9,10])
-      s2 = CS253Array.new(["string", "anotherString", "lastString"])
-      assert_equal s1.cs253slice_before{|e| e  == 2}, [1,2,3,4,5,6,7,8,9,10].slice_before{|e| e  == 2}.to_a
-      assert_equal s1.cs253slice_before{|e| e  == 5}, [1,2,3,4,5,6,7,8,9,10].slice_before{|e| e  == 5}.to_a
-      assert_equal s1.cs253slice_before{|e| e  == 9}, [1,2,3,4,5,6,7,8,9,10].slice_before{|e| e  == 9}.to_a
-    end
-
-    def test_slice_when
-      s = [1,2,3,4,5,6,7,8,9,10]
-      s1 = CS253Array.new(s)
-      assert_equal s1.cs253slice_when{|i, j| i+1 != j }, s.slice_when{|i, j| i+1 != j }.to_a
-      assert_equal s1.cs253slice_when{|i, j| i+1 > j }, s.slice_when{|i, j| i+1 > j }.to_a
-      assert_equal s1.cs253slice_when{|i, j| i+1 <j }, s.slice_when{|i, j| i+1 < j }.to_a
-    end
-
-    def test_take
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253take(0), a.take(0)
-        assert_equal a1.cs253take(3), a.take(3)
-        assert_equal a1.cs253take(10), a.take(10)
-    end
-
-    def test_take_while
-        a =[1, 2, 3, 4, 5, 0]
-        a1 = CS253Array.new(a)
-        assert_equal a1.cs253take_while{|x| x > 0}, a.take_while{|x| x>0}
-        assert_equal a1.cs253take_while{|x| x < 0}, a.take_while{|x| x < 0}
-        assert_equal a1.cs253take_while{|x| x > 3}, a.take_while{|x| x > 3}
-    end
-
-    def test_sort
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      s = ["string", "anotherString", "lastString"]
-      s1 = CS253Array.new(s)
-      assert_equal a1.cs253sort{ |a, b| b <=> a }, a.sort{ |a, b| b <=> a }
-      assert_equal s1.cs253sort{ |a, b| b <=> a }, s.sort{ |a, b| b <=> a }
-      assert_equal s1.cs253sort{ |a, b| b.length <=> a.length }, s.sort{ |a, b| b.length <=> a.length }
-    end
-
-    def test_sort_by
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      s = ["string", "anotherString", "lastString"]
-      s1 = CS253Array.new(s)
-      assert_equal a1.cs253sort_by{ |a| a}, a.sort_by{ |a| a}
-      assert_equal s1.cs253sort_by{ |a| a}, s.sort_by{ |a| a}
-      assert_equal s1.cs253sort_by{ |a| a.length}, s.sort_by{ |a| a.length}
-    end
-
-    def test_sum
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      assert_equal a1.cs253sum(0), a.sum(0)
-      assert_equal a1.cs253sum(0){|x|x}, a.sum(0){|x|x}
-      assert_equal a1.cs253sum(0){|x|x*2}, a.sum(0){|x|x*2}
+        assert_equal [1,4,16], int_triple.cs253each_with_object([]){|i,a| a << i*i}
+        assert_equal ["string", "another", "lastString"] , str_triple.cs253each_with_object([]){|i,a| a << i}
+        assert_equal ["stringstring", "anotheranother", "lastStringlastString"] , str_triple.cs253each_with_object([]){|i,a| a << i*2}
 
     end
 
-    def test_to_a
-      a =[1, 2, 3, 4, 5, 0]
-      a1 = CS253Array.new(a)
-      assert_equal a1.cs253to_a, a.to_a
-      assert_equal a1.cs253to_a, a.to_a
-      assert_equal a1.cs253to_a, a.to_a
+    def test_cs253entries
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        #
     end
 
-    def test_to_h
-      a = [1, 2, 3]
-      a1 = CS253Array.new(a)
-      s = ["string", "anotherString", "lastString"]
-      s1 = CS253Array.new(s)
-      x = [[1], [2], 3]
-      x1 = CS253Array.new(x)
+    def test_cs253find
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
 
-      assert_equal a1.cs253to_h, {0=>1, 1=>2, 2=>3}
-      assert_equal s1.cs253to_h, {0=>"string", 1=>"anotherString", 2=>"lastString"}
-      assert_equal x1.cs253to_h, {0=>[1], 1=>[2], 2=>3}
+        assert_equal 4 , int_triple.cs253find{|x|x==4}
+        assert_equal 2 , int_triple.cs253find{|x|x%2==0}
+        assert_equal 'string' , str_triple.cs253find{|x| x.length == 6}
+    end
+    def test_cs253find_all
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [2,4] , int_triple.cs253find_all{|x| x%2 == 0}
+        assert_equal [ "another", "lastString"], str_triple.cs253find_all{|x| x.length >6}
+        assert_equal ['string'], str_triple.cs253find_all{|x| x.length <7}
+    end
+    def test_cs253find_index
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal 1 , int_triple.cs253find_index(2)
+        assert_equal 1, int_triple.cs253find_index{|x| x%2==0 }
+        assert_equal 2 ,str_triple.cs253find_index{|x| x[2]=='s'}
+    end
+    def test_cs253first
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal 1 ,int_triple.cs253first
+        assert_equal [1,2] , int_triple.cs253first(2)
+        assert_equal ["string", "another"] , str_triple.cs253first(2)
+    end
+    def test_cs253flat_map
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new(["string"], ["another"], ["lastString"])
+        arr_triple = Triple.new([1,2],[4],[5])
+        assert_equal [-1,1,-2,2,-4,4] , int_triple.cs253flat_map{|i| [-i,i]}
+        assert_equal [1,2,100,4,100,5,100], arr_triple.cs253flat_map{|i| i+[100]}
+        assert_equal ["string",'test', "another",'test', "lastString",'test'] ,str_triple.cs253flat_map{|i| i +['test']}
     end
 
-    def test_uniq
-      a = [1, 2, 3]
-      a1 = CS253Array.new(a)
-      s = [ "a", "a", "b", "b", "c" ]
-      s1 = CS253Array.new(s)
-      assert_equal a1.cs253uniq{|x|x}, a.uniq{|x|x}
-      assert_equal s1.cs253uniq{|x|x}, s.uniq{|x|x}
-      assert_equal s1.cs253uniq{|x|x.length}, s.uniq{|x|x.length}
+    def test_cs253grep
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "anothe", "lastString")
+        assert_equal [2,4], (int_triple.cs253grep 2..4)
+        assert_equal ["string","lastString"],str_triple.cs253grep(/ing/)
+        assert_equal ["string","lastString"],str_triple.cs253grep(/r/)
+        
     end
+    def test_cs253grep_v
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
 
-    def test_zip
-      a = [ 4, 5, 6 ]
-      b = [ 7, 8, 9 ]
-      a1 = CS253Array.new(a)
-      b1 = CS253Array.new(b)
-      c = [2, 5]
-      c1 = CS253Array.new(c)
-      d = []
-      d1 = CS253Array.new(d)
-      e=[1]
-      e1= CS253Array.new(e)
-      assert_equal c1.cs253zip(a1, b1), c.zip(a,b)
-      assert_equal d1.cs253zip(a1, b1), d.zip(a,b)
-      assert_equal e1.cs253zip(a1, b1), e.zip(a,b)
+        assert_equal [1,4], int_triple.cs253grep_v(2)
+        assert_equal [2,8], int_triple.cs253grep_v(2){|v| v*2}
+        assert_equal ["another"] , str_triple.cs253grep_v(/ing/)
+    end
+    def test_cs253group_by
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal ({1=>[1], 0=>[2,4]}), int_triple.cs253group_by{|i| i%2}
 
     end
+    def test_cs253include?
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        
+        assert_equal true ,  int_triple.cs253include?(2)
+        assert_equal false , int_triple.cs253include?(5)
+        assert_equal true , str_triple.cs253include?('string')
 
-    def test_length
-        s = ["string", "anotherString", "lastString"]
-        s1 = CS253Array.new(s)
-        a = [[1], 2, 3]
-        a1 = CS253Array.new(a)
-        b = [1, 2, 3]
-        b1 = CS253Array.new(b)
-        assert_equal s1.cs253length, s.length
-        assert_equal a1.cs253length, a.length
-        assert_equal b1.cs253length, b.length
     end
-  
+    def test_cs253inject
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        
+        assert_equal 7 ,int_triple.cs253inject{|x,y| x+y}
+        assert_equal 9 ,int_triple.cs253inject(2){|x,y| x+y}
+        assert_equal 7 ,int_triple.cs253inject(:+)
+        assert_equal 9 ,int_triple.cs253inject(2,:+)
+    end
 
+    def test_cs253map
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [1,4,16], int_triple.cs253map{|i| i*i}
+        assert_equal ['cat','cat','cat'] ,int_triple.cs253map{|i| 'cat'}
+        assert_equal [6,7,10] , str_triple.cs253map{|i| i.length}
+    end
+    def test_cs253max
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal 4 ,int_triple.cs253max()
+        assert_equal [4,2] , int_triple.cs253max(2)
+        assert_equal "lastString",str_triple.cs253max(){|x,y|x.length<=>y.length}
+    end
+    def test_cs253max_by
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal 4 ,int_triple.cs253max_by{|x|x}
+        assert_equal [4,2] , int_triple.cs253max(2){|x|x}
+        assert_equal "lastString",str_triple.cs253max(){|x|x.length}
+    end
+    def test_cs253member?
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        
+        assert_equal true ,  int_triple.cs253member?(2)
+        assert_equal false , int_triple.cs253member?(5)
+        assert_equal true , str_triple.cs253member?('string')
+
+    end
+    def test_cs253min_by
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal 1 ,int_triple.cs253min_by{|x|x}
+        assert_equal [1,2] , int_triple.cs253min_by(2){|x|x}
+        assert_equal "string",str_triple.cs253min_by(){|x|x.length}
+    end
+    def test_cs253min
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal 1 ,int_triple.cs253min()
+        assert_equal [1,2] , int_triple.cs253min(2)
+        assert_equal "string",str_triple.cs253min(){|x,y|x.length<=>y.length}
+    end
+
+    def test_cs253minmax
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+
+        assert_equal [1,4], int_triple.cs253minmax
+        assert_equal ["another","string", ],str_triple.cs253minmax
+        assert_equal ["string", "lastString"], str_triple.cs253minmax{|x,y|x.length<=>y.length}
+    end
+    def test_cs253minmax_by
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+
+        assert_equal [1,4], int_triple.cs253minmax_by{|x|x}
+        assert_equal ["another","string", ],str_triple.cs253minmax_by{|x|x}
+        assert_equal ["string", "lastString"], str_triple.cs253minmax_by{|x|x.length}
+    end
+
+
+
+    def test_cs253to_a
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        int2_triple = Triple.new([1],[2],[4])
+        assert_equal [1,2,4] , int_triple.cs253to_a
+        assert_equal ["string", "another", "lastString"] , str_triple.cs253to_a
+        assert_equal [[1],[2],[4]] , int2_triple.cs253to_a
+    end
+    def test_cs253sort
+        int_triple = Triple.new(4,2,1)
+        str_triple = Triple.new("string", "another", "lastString")
+        str2_triple= Triple.new("abc",'bcde','c')
+        assert_equal [1,2,4] , int_triple.cs253sort
+        assert_equal ["another", "lastString", "string"], str_triple.cs253sort
+        assert_equal [4,2,1] ,int_triple.cs253sort{|x,y| y<=> x}
+        assert_equal ['c','abc','bcde'], str2_triple.cs253sort{|x,y|x.length<=>y.length}
+    end
+    def test_cs253sort_by
+        int_triple = Triple.new(4,2,1)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [1,2,4] ,int_triple.cs253sort_by{|x|x}
+        assert_equal [4,2,1] , int_triple.cs253sort_by{|x|-x}
+        assert_equal ["string", "another", "lastString"], str_triple.cs253sort_by{|x|x.length}
+    end
+    def test_cs253none?
+        int_triple = Triple.new(4,2,1)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal true , int_triple.cs253none?{|x|x>10}
+        assert_equal false , int_triple.cs253none?{|x|x>3}
+        assert_equal true , str_triple.cs253none?{|c|c.length > 100}
+    end
+    def test_cs253one?
+        int_triple = Triple.new(4,2,1)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal false , int_triple.cs253one?{|x|x>10}
+        assert_equal true , int_triple.cs253one?{|x|x>3}
+        assert_equal false , str_triple.cs253one?{|c|c.length > 100}
+    end
+    def test_cs253partition
+        int_triple = Triple.new(4,2,1)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [[4,2],[1]], int_triple.cs253partition{|v|v.even?}
+        assert_equal [[1],[4,2]], int_triple.cs253partition{|v|v.odd?}
+        assert_equal [["string"],["another", "lastString"]], str_triple.cs253partition{|x|x.length<7}
+    end
+    def test_cs253reduce
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        
+        assert_equal 7 ,int_triple.cs253reduce{|x,y| x+y}
+        assert_equal 9 ,int_triple.cs253reduce(2){|x,y| x+y}
+        assert_equal 7 ,int_triple.cs253reduce(:+)
+        assert_equal 9 ,int_triple.cs253reduce(2,:+)
+    end
+    def test_cs253reject
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [1], int_triple.cs253reject{|x|x%2==0}
+    end
+
+    def test_cs253slice_when
+
+
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [[1,2],[4]], int_triple.cs253slice_when{|i,j| i+1 != j}
+        assert_equal [["string", "another"],["lastString"]], str_triple.cs253slice_when{|i,j| i.length+1 != j.length}
+        assert_equal [[1],[2,4]] , int_triple.cs253slice_when{|i,j| i+2 != j}
+    end
+    def test_cs253sum
+
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+
+        assert_equal 7, int_triple.cs253sum()
+        assert_equal 17, int_triple.cs253sum(10)
+        assert_equal 14 , int_triple.cs253sum{|x|x*2}
+        assert_equal "stringanotherlastString" ,str_triple.cs253sum('')
+    end
+
+    def test_cs253take
+
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [1], int_triple.cs253take(1)
+        assert_equal [1,2], int_triple.cs253take(2)
+        assert_equal ["string", "another"],str_triple.cs253take(2)
+    end
+    def test_cs253take_while
+
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+        assert_equal [1], int_triple.cs253take_while(){|i|i<2}
+        assert_equal [1,2], int_triple.cs253take_while(){|i|i<3}
+        assert_equal ["string", "another"],str_triple.cs253take_while(){|i|i.length<8}
+    end
+
+    def test_cs253to_h
+        int2_triple = Triple.new(1,2)
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+
+        assert_equal ({1 => 2, 3 => 4, 5 => 6}), CS253Array.new(([[1, 2], [3, 4], [5, 6]])).cs253to_h
+        #tudo
+        # assert_equal ({1=>0, 2=>1, 4=>2}), int_triple.cs253each_with_index.cs253to_h
+        # assert_equal ({"string"=>0, "another"=>1, "lastString"=>2}), str_triple.cs253each_with_index.cs253to_h
+        # assert_equal ({1=>0, 2=>1, nil=>2}),int2_triple.cs253each_with_index.cs253to_h
+    end
+
+    def test_cs253uniq
+        int_triple = Triple.new(1,2,2)
+        str_triple = Triple.new("another", "another", "lastString")
+
+        assert_equal [1,2] ,int_triple.cs253uniq
+        assert_equal ["another", "lastString"] , str_triple.cs253uniq
+        assert_equal [1,2] , int_triple.cs253uniq{|v|v*2}
+    end
+
+    def test_cs253zip
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("another", "another", "lastString")
+
+        assert_equal [[1, 4], [2, 5], [4, 6]] ,int_triple.cs253zip([4,5,6])
+        assert_equal [[1, 4, 8], [2, 5, nil], [4, 6, nil]], int_triple.cs253zip([4,5,6],[8])
+        assert_equal [["another", 1], ["another", 2], ["lastString", 3]] , str_triple.cs253zip([1,2,3])
+        c = []
+        int_triple.cs253zip([1,2,4]){|x,y| c << x+y}
+        assert_equal [2,4,8] , c 
+    end
+    def test_cs253length
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("another", "another", "lastString")
+        int2_triple = Triple.new(1,2)
+        assert_equal 3, int_triple.cs253length
+        assert_equal 3 ,str_triple.cs253length
+        assert_equal 3 , int2_triple.cs253length #the length of triple class is inherent that is 3 
+
+    end
+    def test_cs253slice_before
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+
+        assert_equal [[1], [2, 4]] , int_triple.cs253slice_before(2)
+        assert_equal [["string"], ["another", "lastString"]], str_triple.cs253slice_before('another')
+        assert_equal [[1], [2], [4]] , int_triple.cs253slice_before{|x| x%2 == 0}
+
+    end
+    def test_cs253slice_after
+        int_triple = Triple.new(1,2,4)
+        str_triple = Triple.new("string", "another", "lastString")
+
+        assert_equal [[1, 2], [4]] , int_triple.cs253slice_after(2)
+        assert_equal [["string", "another"], ["lastString"]], str_triple.cs253slice_after('another')
+        assert_equal [[1, 2], [4]], int_triple.cs253slice_after{|x| x%2 == 0}
+    end
+        
 end
 
 
