@@ -98,7 +98,8 @@ class CS253EnumTests < Minitest::Test
     end
 
     def test_cs253each_entry
-
+        assert_equal @int_array_enum.cs253each_entry {|e| p e},@int_array.each_entry {|e| p e}
+        assert_equal @long_int_array_enum.cs253each_entry {|e| p e},@long_int_array_enum{|e| p e}
     end
 
     def test_cs253each_slice 
