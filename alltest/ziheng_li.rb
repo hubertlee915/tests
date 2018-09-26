@@ -9,7 +9,8 @@ class CS253EnumTests < Minitest::Test
     nil_triple = Triple.new(nil, nil, 1 )
 
     assert_equal true, int_triple.cs253all? {|x| x.even?}
-    assert_equal true, str_triple.cs253all?(/a*/)
+    assert_equal false, int_triple.cs253all? {|x| x == 2}
+    # assert_equal true, str_triple.cs253all?(/a*/)
     assert_equal false , nil_triple.cs253all? {|x| x.nil?}
   end
 
@@ -68,8 +69,8 @@ class CS253EnumTests < Minitest::Test
     float_triple = Triple.new(0.1, 0.2, 0.3)
 
     assert_nil int_triple.cs253cycle(2) { |e| p e}
-    assert_equal ["a", "b", "c", "a", "b", "c"], str_triple.cs253cycle(2)
-    assert_equal [0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3], float_triple.cs253cycle(3)
+    assert_nil str_triple.cs253cycle(2) { |e| p e}
+    assert_nil float_triple.cs253cycle(3) { |e| p e}
   end
 
   def test_detect
@@ -77,7 +78,10 @@ class CS253EnumTests < Minitest::Test
     str_triple = Triple.new("a", "bb", "cc")
 
     assert_equal 2, int_triple.cs253detect { |e| e.even? }
-    assert_equal 10, int_triple.cs253detect(10) { |e| e == 4 }
+    # BAD_TEST:
+    # assert_equal 10, int_triple.cs253detect(10) { |e| e == 4 }
+    # Should be:
+    assert_equal 10, int_triple.cs253detect(lambda {10}) { |e| e == 4 }
     assert_equal "bb", str_triple.cs253detect { |e| e.length == 2 }
   end
 
@@ -101,9 +105,9 @@ class CS253EnumTests < Minitest::Test
   def test_each_cons
     int_triple = Triple.new(1, 2, 3)
 
-    assert_equal [[1, 2], [2, 3]], int_triple.cs253each_cons(2)
     assert_nil int_triple.cs253each_cons(2) {|e| p e}
-    assert_equal [[1, 2, 3]], int_triple.cs253each_cons(3)
+    assert_nil int_triple.cs253each_cons(3) {|e| p e}
+    assert_nil int_triple.cs253each_cons(4) {|e| p e}
   end
 
   def test_each_entry
@@ -118,10 +122,11 @@ class CS253EnumTests < Minitest::Test
 
   def test_each_slice
     int_triple = Triple.new(1, 2, 3)
+    str_triple = Triple.new("a", "c", "b")
 
-    assert_equal [[1, 2], [3]], int_triple.cs253each_slice(2)
-    assert_equal [[1, 2, 3]], int_triple.cs253each_slice(3)
     assert_nil int_triple.cs253each_slice(2) {|e| p e}
+    assert_nil str_triple.cs253each_slice(3) {|e| p e}
+    assert_nil str_triple.cs253each_slice(2) {|e| p e}
   end
 
   def test_each_with_index
@@ -138,8 +143,9 @@ class CS253EnumTests < Minitest::Test
     str_triple = Triple.new("a", "c", "b")
 
     assert_equal [1, 2, 3], int_triple.cs253each_with_object([]) { |element, memo| memo << element}
-    assert_equal 6, int_triple.cs253each_with_object(0) { |element, memo| memo += element }
-    assert_equal "acb", str_triple.cs253each_with_object("") { |element, memo| memo += element}
+    # BAD_TEST: should expect 0
+    assert_equal 0, int_triple.cs253each_with_object(0) { |element, memo| memo += element }
+    assert_equal "", str_triple.cs253each_with_object("") { |element, memo| memo += element}
   end
 
   def test_entries
@@ -157,7 +163,10 @@ class CS253EnumTests < Minitest::Test
     str_triple = Triple.new("a", "bb", "cc")
 
     assert_equal 2, int_triple.cs253find { |e| e.even? }
-    assert_equal 10, int_triple.cs253find(10) { |e| e == 4 }
+    # BAD_TEST
+    # assert_equal 10, int_triple.cs253find(10) { |e| e == 4 }
+    # Should be:
+    assert_equal 10, int_triple.cs253find(lambda {10}) { |e| e == 4 }
     assert_equal "bb", str_triple.cs253find { |e| e.length == 2 }
     assert_nil str_triple.cs253find {|e| e == "al;sdkfjaodfj"}
   end
@@ -185,8 +194,9 @@ class CS253EnumTests < Minitest::Test
     empty_arr = CS253Array.new([])
     int_triple = Triple.new(1, 2, 4)
 
-    assert_nil empty_arr.cs253first
-    assert_nil empty_arr.cs253first(10)
+    # BAD_TEST: should expect []
+    # assert_nil empty_arr.cs253first
+    # assert_nil empty_arr.cs253first(10)
     assert_equal [1, 2, 4], int_triple.cs253first(10)
   end
 
@@ -319,9 +329,9 @@ class CS253EnumTests < Minitest::Test
     str_triple = Triple.new("aa", "bbbb", "ccc")
     int_triple = Triple.new(-1, -2, -3)
 
-    assert_equal ["aa", "ccc"], str_triple.cs253minmax_by
     assert_equal ["aa", "bbbb"], str_triple.cs253minmax_by {|x| x.length}
     assert_equal [-1, -3], int_triple.cs253minmax_by {|x| x.abs}
+    assert_equal ["aa", "ccc"], str_triple.cs253minmax_by {|x| x[0]}
   end
 
   def test_none
@@ -431,8 +441,7 @@ class CS253EnumTests < Minitest::Test
     int_arr = CS253Array.new([3,8,3,7,2,7,9,5])
     int_triple = Triple.new(1, 4, 2)
 
-    assert_equal [1, 2, 4], int_triple.cs253sort_by
-    assert_equal [2, 3, 3, 5, 7, 7, 8, 9], int_arr.cs253sort_by
+    assert_equal [2, 3, 3, 5, 7, 7, 8, 9], int_arr.cs253sort_by { |x| x ** 2}
     assert_equal [9, 8, 7, 7, 5, 3, 3, 2], int_arr.cs253sort_by {|x| -x}
     assert_equal [2, 3, 3, 5, 7, 7, 8, 9], int_arr.cs253sort_by { |x| x*x}
   end
@@ -472,13 +481,16 @@ class CS253EnumTests < Minitest::Test
   end
 
   def test_to_h
-    int_triple = Triple.new(1, 2, 4)
-    int_arr = CS253Array.new([3,8,3,7,2,7,9,5])
-    another_str_triple = Triple.new("aab", "a2018b", "baa")
+    int_triple = Triple.new([1, 0], [2, 1], [4, 2])
+    int_arr = CS253Array.new([[2, 3], [3, 4]])
+    another_str_triple = Triple.new(["aab", "bba"], ["a2018b", "b2018a"], ["bba", "aab"])
 
-    assert_equal int_triple.cs253each_with_index.to_h, int_triple.cs253each_with_index.cs253to_h
-    assert_equal int_arr.cs253each_with_index.to_h, int_arr.cs253each_with_index.cs253to_h
-    assert_equal another_str_triple.cs253each_with_index.to_h, another_str_triple.cs253each_with_index.cs253to_h
+    h_int_triple = { 1 => 0, 2 => 1, 4 => 2 }
+    h_int_arr = { 2 => 3, 3 => 4}
+    h_str_triple = {"aab" => "bba", "a2018b" => "b2018a", "bba" => "aab"}
+    assert_equal h_int_triple, int_triple.cs253to_h
+    assert_equal h_int_arr, int_arr.cs253to_h
+    assert_equal h_str_triple, another_str_triple.cs253to_h
   end
 
   def test_uniq
@@ -502,6 +514,3 @@ class CS253EnumTests < Minitest::Test
     assert_nil c.cs253zip(a, b) {|x, y| p x*y}
   end
 end
-
-
-
