@@ -216,7 +216,6 @@ class CS253EnumTests2dd < Minitest::Test
     int_find_two = CS253Array.new([1, 2, 3, 4, 5])
 
     assert_equal int_find.cs253find {|i| i > 3}.to_i, 4
-    # ERROR
     assert_equal triple_find.cs253find() {|i| i[-1] > 5}.to_s, ""
     assert_equal int_find_two.cs253find {|i| i > 6}.to_s, ""
   end
@@ -446,11 +445,10 @@ class CS253EnumTests2dd < Minitest::Test
     int_reverse = CS253Array.new([1, 2, 3, 4, 5, 6, 7, 8, 9])
     str_reverse = CS253Array.new(['cat', 'dog', 'duck'])
     arr_reverse = CS253Array.new([[2, 4, 6], [1, 3, 5], [7, 9, 8]])
-    # ERROR
+
     res = []
     res1 = []
     res2 = []
-    #assert_equal int_reverse.cs253reverse_each {|i| 10 * i}.to_a, [90, 80, 70, 60, 50, 40, 30, 20, 10].reverse_each {|i| 10 * i}.to_a
     assert_equal int_reverse.cs253reverse_each {|i| res << 10 * i}.to_a, [1,2,3,4,5,6,7,8,9]
     assert_equal res, [90,80,70,60,50,40,30,20,10]
     assert_equal str_reverse.cs253reverse_each {|i| res1 << i[-1]}.to_a, [ "cat","dog", "duck"]
