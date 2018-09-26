@@ -173,10 +173,10 @@ class CS253EnumTests < Minitest::Test
         arr_each_entry = CS253Array.new([[1,2,3],[4,5,6],[7,8,9]])
         triple = Triple.new(1,3,4)
 
-        assert_equal int_each_entry.cs253each_entry{|e| 10*e}.to_a, [10,20,30]
-        assert_equal str_each_entry.cs253each_entry{|e| e.length}.to_a, [3,3,4]
+        assert_equal int_each_entry.cs253each_entry{|e| 10*e}.to_a, [1,2,3]
+        assert_equal str_each_entry.cs253each_entry{|e| e.length}.to_a, ['cat', 'dog', 'duck']
         assert_equal arr_each_entry.cs253each_entry{|e| e}.to_a,[[1,2,3],[4,5,6],[7,8,9]]
-        assert_equal triple.cs253each_entry{|i|  i<3}.to_a,[true,false,false]
+        assert_equal triple.cs253each_entry{|i|  i<3}.to_a,[1,3,4]
     end
 
     def test_each_slice
@@ -254,7 +254,7 @@ class CS253EnumTests < Minitest::Test
         triple = Triple.new(1,3,4)
 
         assert_equal int_find.cs253find{|i| i > 3}.to_i, 4
-        assert_equal arr_find.cs253find("none element"){|i| i[-1] > 5}.to_s, "none element"
+        assert_equal arr_find.cs253find{|i| i[-1] > 5}.to_s, ""
         assert_equal int_find_two.cs253find{|i| i > 6}.to_s, ""
         assert_equal triple.cs253find{|i| i > 6}.to_s, ""
     end
@@ -530,10 +530,10 @@ class CS253EnumTests < Minitest::Test
         arr_reverse = CS253Array.new([[2,4,6],[1,3,5],[7,9,8]])
         triple_test= Triple.new(3,5,4)
 
-        assert_equal triple_test.cs253reverse_each{ |a| a }.to_a,[4,5,3]
-        assert_equal int_reverse.cs253reverse_each{|i| 10*i}.to_a, [90, 80, 70, 60, 50, 40, 30, 20, 10]
-        assert_equal str_reverse.cs253reverse_each{|i| i}.to_a, ["duck", "dog", "cat"]
-        assert_equal arr_reverse.cs253reverse_each{|i| i[0] + i[-1]}, [15, 6, 8]
+        assert_equal triple_test.cs253reverse_each{ |a| a }.to_a,[3,5,4]
+        assert_equal int_reverse.cs253reverse_each{|i| 10*i}.to_a, [1,2,3,4,5,6,7,8,9]
+        assert_equal str_reverse.cs253reverse_each{|i| i}.to_a, ['cat', 'dog','duck']
+        assert_equal arr_reverse.cs253reverse_each{|i| i[0] + i[-1]},[[2,4,6],[1,3,5],[7,9,8]]
     end
 
     def test_select
