@@ -180,9 +180,9 @@ class CS253EnumTests < Minitest::Test
 
         cs_res, res = [], []; int_triple.cs253each_entry{|i| cs_res << i}; int_triple.each_entry{|i| res << i}; assert_equal(cs_res, res)
         cs_res, res = [], []; str_triple.cs253each_entry{|i| cs_res << i.length}; str_triple.each_entry{|i| res << i.length}; assert_equal(cs_res, res)
-        assert_equal(float_triple.cs253each_entry{|i| i < 1}, float_triple.each_entry{|i| i < 1})
-        assert_equal(nil_triple.cs253each_entry{|i| i > 0}, nil_triple.each_entry{|i| i > 0})
-        assert_equal(cus_triple.cs253each_entry{|i| i > 0}, cus_triple.each_entry{|i| i > 0})
+        assert_equal(float_triple.cs253each_entry{|i| i < 1}, float_triple.each_entry{|i| i < 1}.to_a)
+        assert_equal(nil_triple.cs253each_entry{|i| i > 0}, nil_triple.each_entry{|i| i > 0}.to_a)
+        assert_equal(cus_triple.cs253each_entry{|i| i > 0}, cus_triple.each_entry{|i| i > 0}.to_a)
     end
 
     def test_each_slice
@@ -403,7 +403,7 @@ class CS253EnumTests < Minitest::Test
         cus_triple = Triple.new(1, 2, 3)
 
         assert_equal(int_triple.cs253max(2){|a, b| a <=> b}, int_triple.max(2){|a, b| a <=> b})
-        assert_equal(str_triple.cs253max{|a, b| a.length <=> b.length}, str_triple.max{|a, b| a.length <=> b.length})
+        assert_equal(str_triple.cs253max(2){|a, b| a.length <=> b.length}, str_triple.max(2){|a, b| a.length <=> b.length})
         assert_equal(float_triple.cs253max(1){|a, b| a ** 2 <=> b ** 2}, float_triple.max(1){|a, b| a ** 2 <=> b ** 2})
         assert_equal(nil_triple.cs253max{|a, b| a.round <=> b.round}, nil_triple.max{|a, b| a.round <=> b.round})
         assert_equal(cus_triple.cs253max{|a, b| a.round <=> b.round}, cus_triple.max{|a, b| a.round <=> b.round})
@@ -417,7 +417,7 @@ class CS253EnumTests < Minitest::Test
         cus_triple = Triple.new(1, 2, 3)
 
         assert_equal(int_triple.cs253max_by(2){|i| i}, int_triple.max_by(2){|i| i})
-        assert_equal(str_triple.cs253max_by{|i| i.length}, str_triple.max_by{|i| i.length})
+        assert_equal(str_triple.cs253max_by(2){|i| i.length}, str_triple.max_by(2){|i| i.length})
         assert_equal(float_triple.cs253max_by(1){|i| i.round}, float_triple.max_by(1){|i| i.round})
         assert_equal(nil_triple.cs253max_by{|i| i.abs}, nil_triple.max_by{|i| i.abs})
         assert_equal(cus_triple.cs253max_by{|i| i.abs}, cus_triple.max_by{|i| i.abs})
@@ -445,7 +445,7 @@ class CS253EnumTests < Minitest::Test
         cus_triple = Triple.new(1, 2, 3)
 
         assert_equal(int_triple.cs253min(2){|a, b| a <=> b}, int_triple.min(2){|a, b| a <=> b})
-        assert_equal(str_triple.cs253min{|a, b| a.length <=> b.length}, str_triple.min{|a, b| a.length <=> b.length})
+        assert_equal(str_triple.cs253min(2){|a, b| a.length <=> b.length}, str_triple.min(2){|a, b| a.length <=> b.length})
         assert_equal(float_triple.cs253min(1){|a, b| a ** 2 <=> b ** 2}, float_triple.min(1){|a, b| a ** 2 <=> b ** 2})
         assert_equal(nil_triple.cs253min{|a, b| a.round <=> b.round}, nil_triple.min{|a, b| a.round <=> b.round})
         assert_equal(cus_triple.cs253min{|a, b| a.round <=> b.round}, cus_triple.min{|a, b| a.round <=> b.round})
@@ -459,7 +459,7 @@ class CS253EnumTests < Minitest::Test
         cus_triple = Triple.new(1, 2, 3)
 
         assert_equal(int_triple.cs253min_by(2){|i| i}, int_triple.min_by(2){|i| i})
-        assert_equal(str_triple.cs253min_by{|i| i.length}, str_triple.min_by{|i| i.length})
+        assert_equal(str_triple.cs253min_by(2){|i| i.length}, str_triple.min_by(2){|i| i.length})
         assert_equal(float_triple.cs253min_by(1){|i| i.round}, float_triple.min_by(1){|i| i.round})
         assert_equal(nil_triple.cs253min_by{|i| i.abs}, nil_triple.min_by{|i| i.abs})
         assert_equal(cus_triple.cs253min_by{|i| i.abs}, cus_triple.min_by{|i| i.abs})
@@ -755,7 +755,7 @@ class CS253EnumTests < Minitest::Test
         assert_equal(float_triple.cs253zip(nil_triple, str_triple), float_triple.zip(nil_triple, str_triple))
         cs_res, res = [], []; int_triple.cs253zip(float_triple){|x, y| cs_res << x + y}; int_triple.zip(float_triple){|x, y| res << x + y}; assert_equal(cs_res, res)
         assert_equal(nil_triple.cs253zip(str_triple, int_triple), nil_triple.zip(str_triple, int_triple))
-        assert_equal(cus_triple.cs253zip(str_triple, int_triple), cus_triple.zip(str_triple, int_triple))
+        assert_equal(cus_triple.cs253zip(str_triple, cus_triple), cus_triple.zip(str_triple, cus_triple))
     end
 
     def test_length
@@ -769,9 +769,8 @@ class CS253EnumTests < Minitest::Test
         assert_equal(str_triple.cs253length, str_triple.length)
         assert_equal(float_triple.cs253length, float_triple.length)
         assert_equal(nil_triple.cs253length, nil_triple.length)
-        assert_equal(cus_triple.cs253length, cus_triple.length)
+        assert_equal(cus_triple.cs253length, 3)
     end
-
 end
 
 
