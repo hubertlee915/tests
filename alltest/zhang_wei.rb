@@ -212,11 +212,11 @@ class CS253EnumTests2dd < Minitest::Test
 
   def test_find
     int_find = CS253Array.new([1, 2, 3, 4, 5])
-    arr_find = CS253Array.new([[1, 2, 3], [2, 3, 4], [3, 4, 5]])
+    triple_find = Triple.new([1, 2, 3], [2, 3, 4], [3, 4, 5])
     int_find_two = CS253Array.new([1, 2, 3, 4, 5])
 
     assert_equal int_find.cs253find {|i| i > 3}.to_i, 4
-    assert_equal arr_find.cs253find("nothing found") {|i| i[-1] > 5}.to_s, "nothing found"
+    assert_equal triple_find.cs253find() {|i| i[-1] > 5}.to_s, ""
     assert_equal int_find_two.cs253find {|i| i > 6}.to_s, ""
   end
 
@@ -293,11 +293,11 @@ class CS253EnumTests2dd < Minitest::Test
 
   def test_include?
     io_include = CS253Array.new(IO.constants)
-    io_include_two = CS253Array.new(IO.constants)
+    triple_include = Triple.new(Float,Integer,Numeric)
     int_include = CS253Array.new([2, 3, 4, 5, 6])
 
     assert_equal io_include.cs253include?(:SEEK_SET).to_s, "true"
-    assert_equal io_include.cs253include?(:SEEK_NO_FURTHER).to_s, "false"
+    assert_equal triple_include.cs253include?(Integer.superclass).to_s, "true"
     assert_equal int_include.cs253include?(2).to_s, "true"
   end
 
@@ -323,11 +323,11 @@ class CS253EnumTests2dd < Minitest::Test
   def test_max
     str_max = CS253Array.new(['albatross', 'albatross', 'dog', 'horse'])
     str_max_two = CS253Array.new(['albatross', 'albatross', 'dog', 'horse'])
-    str_max_three = CS253Array.new(['albatross', 'albatross', 'dog', 'horse'])
+    triple_three = Triple.new("dsfgdg","what's", "that?")
 
     assert_equal str_max.cs253max(5).to_a, [ "horse", "dog","albatross", "albatross"]
     assert_equal str_max_two.cs253max(3) {|a, b| a.length <=> b.length}.to_a, ["albatross", "albatross", "horse"]
-    assert_equal str_max_three.cs253max(1) {|a, b| a.length <=> b.length}.to_a, ["albatross"]
+    assert_equal triple_three.cs253max, "what's"
   end
 
   def test_max_by
@@ -336,7 +336,7 @@ class CS253EnumTests2dd < Minitest::Test
     str_max_by_three = CS253Array.new(['albatross', 'albatross', 'dog', 'horse'])
 
     assert_equal str_max_by.cs253max_by(5) {|a| a.length}.to_a, ["albatross", "albatross", "horse", "dog"]
-    assert_equal str_max_by_two.cs253max_by(3) {|a| a.length}.to_a, ["albatross", "albatross", "horse"]
+    assert_equal str_max_by_two.cs253max_by {|a| a[1]}, ['albatross', 'albatross', 'dog', 'horse'].max_by{|i| i[1]}
     assert_equal str_max_by_three.cs253max_by(1) {|a| a.length}.to_a, ["albatross"]
   end
 
@@ -352,11 +352,12 @@ class CS253EnumTests2dd < Minitest::Test
 
   def test_min
     str_min = CS253Array.new(['albatross', 'albatross', 'dog', 'horse'])
-    str_min_two = CS253Array.new(['albatross', 'albatross', 'dog', 'horse'])
+    float_min = CS253Array.new([17.21,17.31,21.77,21.77,21.779])
     str_min_three = CS253Array.new(['albatross', 'albatross', 'dog', 'horse'])
 
+
     assert_equal str_min.cs253min(5).to_a, [ "albatross", "albatross","dog", "horse"]
-    assert_equal str_min_two.cs253min(3) {|a, b| a.length <=> b.length}.to_a, ["dog", "horse", "albatross"]
+    assert_equal float_min.cs253min(3) , [17.21,17.31,21.77]
     assert_equal str_min_three.cs253min(1) {|a, b| a.length <=> b.length}.to_a, ["dog"]
   end
 
@@ -367,17 +368,17 @@ class CS253EnumTests2dd < Minitest::Test
 
     assert_equal str_min_by.cs253min_by(5) {|a| a.length}.to_a, ["dog", "horse", "albatross", "albatross"]
     assert_equal str_min_by_two.cs253min_by(3) {|a| a.length}.to_a, ["dog", "horse", "albatross"]
-    assert_equal str_min_by_three.cs253min_by(1) {|a| a.length}.to_a, ["dog"]
+    assert_equal str_min_by_three.cs253min_by {|a| a}, "albatross"
   end
 
   def test_minmax
     str_minmax = CS253Array.new(['albatross', 'albatross', 'dog', 'horse'])
     int_minmax = CS253Array.new([1, 2, 3, 4, 5])
-    arr_minmax = CS253Array.new([[1, 2, 3], [2, 3, 4], [3, 4, 5]])
+    triple_minmax = Triple.new([1, 2, 3], [2, 3, 4], [3, 4, 5])
 
     assert_equal str_minmax.cs253minmax {|a, b| a.length <=> b.length}.to_a, ["dog", "albatross"]
     assert_equal int_minmax.cs253minmax {|a, b| a <=> b}.to_a, [1, 5]
-    assert_equal arr_minmax.cs253minmax {|a, b| a[0] <=> b[0]}.to_a, [[1, 2, 3], [3, 4, 5]]
+    assert_equal triple_minmax.cs253minmax {|a, b| a[0] <=> b[0]}.to_a, [[1, 2, 3], [3, 4, 5]]
   end
 
   def test_minmiax_by
@@ -392,11 +393,11 @@ class CS253EnumTests2dd < Minitest::Test
 
   def test_none?
     int_none = CS253Array.new([1, 3, 5, 7])
-    str_none = CS253Array.new(['ant', 'bear', 'cat'])
+    triple_none = Triple.new("day","night","dawn")
     arr_none = CS253Array.new([[1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11, 12]])
 
     assert_equal int_none.cs253none? {|i| i.even?}.to_s, "true"
-    assert_equal str_none.cs253none? {|i| i.length > 3}.to_s, "false"
+    assert_equal triple_none.cs253none? {|i| i.length > 3}.to_s, "false"
     assert_equal arr_none.cs253none? {|i| i.length > 6}.to_s, "true"
   end
 
@@ -445,18 +446,30 @@ class CS253EnumTests2dd < Minitest::Test
     str_reverse = CS253Array.new(['cat', 'dog', 'duck'])
     arr_reverse = CS253Array.new([[2, 4, 6], [1, 3, 5], [7, 9, 8]])
 
-    assert_equal int_reverse.cs253reverse_each {|i| 10 * i}.to_a, [90, 80, 70, 60, 50, 40, 30, 20, 10]
-    assert_equal str_reverse.cs253reverse_each {|i| i}.to_a, ["duck", "dog", "cat"]
-    assert_equal arr_reverse.cs253reverse_each {|i| i[0] + i[-1]}, [15, 6, 8]
+    res = []
+    res1 = []
+    res2 = []
+    assert_equal int_reverse.cs253reverse_each {|i| res << 10 * i}.to_a, [1,2,3,4,5,6,7,8,9]
+    assert_equal res, [90,80,70,60,50,40,30,20,10]
+    assert_equal str_reverse.cs253reverse_each {|i| res1 << i[-1]}.to_a, [ "cat","dog", "duck"]
+    assert_equal res1, ["k","g","t"]
+    arr_reverse.cs253reverse_each do |i|
+      if i[0].even?
+        res2.push(i[0])
+      else
+        res2.push(i[-1])
+      end
+    end
+    assert_equal res2, [8,5,2]
   end
 
   def test_select
     int_select_bigger = CS253Array.new([2, 3, 4, 5, 6])
-    int_select_even = CS253Array.new([5, 7, 8, 9])
+    triple = Triple.new(0,2,7)
     str_select = CS253Array.new(['apple', 'banana', 'orange', 'application'])
 
     assert_equal int_select_bigger.cs253select {|num| num > 3}.to_a, [4, 5, 6]
-    assert_equal int_select_even.cs253select {|num| num.even?}.to_a, [8]
+    assert_equal triple.cs253select {|num| num.even?}.to_a, [0,2]
     assert_equal str_select.cs253select {|str| str.include? 'app'}.to_a, ['apple', 'application']
   end
 
@@ -556,7 +569,8 @@ class CS253EnumTests2dd < Minitest::Test
     int_uniq_two = CS253Array.new([1, 2, 3, 4, 5, 5, 2, 6, 8])
     str_uniq = CS253Array.new(['cat', 'dog', 'cat', 'mouse'])
 
-    assert_equal int_uniq.cs253uniq {|i| i.even?}.to_a, [1, 2, 3, 4, 6]
+
+    assert_equal int_uniq.cs253uniq {|i| i.even?}.to_a, [1,2]
     assert_equal int_uniq_two.cs253uniq {|i| i}.to_a, [1, 2, 3, 4, 5, 6, 8]
     assert_equal str_uniq.cs253uniq {|i| i}.to_a, ['cat', 'dog', 'mouse']
   end
@@ -589,4 +603,3 @@ class CS253EnumTests2dd < Minitest::Test
     assert_equal str_length1.cs253length.to_i, 6
   end
 end
-
