@@ -180,18 +180,25 @@ class CS253EnumTests < Minitest::Test
     def test_each_entry
         cscarr = Triple.new(1, 2, 3)
         testarr = []
+        actarr = []
         cscarr.cs253each_entry{|e| testarr << e}
-        assert_equal testarr, [1, [2, 2], 3]
+        cscarr.each_entry{|e| actarr << e}
+
+        assert_equal testarr, actarr
 
         cscarr = Triple.new("go", nil, 3)
         testarr = []
+        actarr = []
         cscarr.cs253each_entry{|e| testarr << e}
-        assert_equal testarr, ["go", [nil, 2], 3]
+        cscarr.cs253each_entry{|e| actarr << e}
+        assert_equal testarr, actarr
 
         cscarr = Triple.new
         testarr = []
+        actarr = []
         cscarr.cs253each_entry{|e| testarr << e}
-        assert_equal testarr, [nil, [nil, 2], nil]
+        cscarr.cs253each_entry{|e| actarr << e}
+        assert_equal testarr, actarr
     end
 
     def test_each_slice
@@ -741,16 +748,16 @@ class CS253EnumTests < Minitest::Test
     def test_to_a
         arr = Triple.new(1, 2, 3)
         cscarr = Triple.new(1, 2, 3)
-        assert_equal cscarr.cs253to_a, [1, [2, 2], 3]
+        assert_equal cscarr.cs253to_a, arr.to_a
 
 
         arr = Triple.new("go", nil, 3)
         cscarr = Triple.new("go", nil, 3)
-        assert_equal cscarr.cs253to_a, ["go", [nil, 2], 3]
+        assert_equal cscarr.cs253to_a, arr.to_a
 
         arr = Triple.new
         cscarr = Triple.new
-        assert_equal cscarr.cs253to_a, [nil, [nil, 2], nil]
+        assert_equal cscarr.cs253to_a, arr.to_a
     end
 
     def test_uniq
@@ -811,6 +818,4 @@ class CS253EnumTests < Minitest::Test
     end
 
 end
-
-
 
