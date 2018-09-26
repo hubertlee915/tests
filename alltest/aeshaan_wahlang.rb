@@ -1,6 +1,6 @@
-$LOAD_PATH << '.'
-require './minitest/autorun.rb'
-require './cs253Array.rb'
+# $LOAD_PATH << '.'
+require 'minitest/autorun.rb'
+require_relative './cs253Array.rb'
 
 class CS253EnumTests < Minitest::Test
     def test_collect
@@ -29,14 +29,15 @@ class CS253EnumTests < Minitest::Test
         assert_equal str_triple.cs253any?{|i| i.length>2},true
     end
 
-    def test_collect_concat
-        int_triple = CS253Array.new([1, 5, 3])
-        str_triple = CS253Array.new(["string", "dog", "food"])
+    #bad test
+    # def test_collect_concat
+    #     int_triple = CS253Array.new([1, 5, 3])
+    #     str_triple = CS253Array.new(["string", "dog", "food"])
 
-        assert_equal int_triple.cs253collect_concat{|i| i*10},[1,10,5,50,3,30]
-        assert_equal int_triple.cs253collect_concat{|i| i%2},[1,1,5,1,3,1]
-        assert_equal str_triple.cs253collect_concat{|i| i.length},['string',6,'dog',3,'food',4]
-    end
+    #     assert_equal int_triple.cs253collect_concat{|i| i*10},[1,10,5,50,3,30]
+    #     assert_equal int_triple.cs253collect_concat{|i| i%2},[1,1,5,1,3,1]
+    #     assert_equal str_triple.cs253collect_concat{|i| i.length},['string',6,'dog',3,'food',4]
+    # end
 
     def test_count
         int_triple = CS253Array.new([1, 5, 3, 4, 6, 3, 3])
@@ -61,7 +62,7 @@ class CS253EnumTests < Minitest::Test
         str_triple = CS253Array.new(["string", "anotherString", "lastString"])
 
         assert_equal int_triple.cs253detect{|i| i%2==0 },4
-        assert_equal int_triple.cs253detect(77){|i| i%7==0},77
+        # assert_equal int_triple.cs253detect(77){|i| i%7==0},77
         assert_equal int_triple.cs253detect{|i| i%57==0},nil
     end
 
@@ -93,14 +94,15 @@ class CS253EnumTests < Minitest::Test
         assert_equal str_triple.cs253each_slice(2){|i| i},nil
     end
 
-    def test_each_with_index
-        int_triple = CS253Array.new([1, 2, 3, 4, 5, 6])
-        str_triple = CS253Array.new(["string", "anotherString", "lastString"])
+    #bad test
+    # def test_each_with_index
+    #     int_triple = CS253Array.new([1, 2, 3, 4, 5, 6])
+    #     str_triple = CS253Array.new(["string", "anotherString", "lastString"])
 
-        assert_equal int_triple.cs253each_slice(2){|i| print(i)},nil
-        # assert_equal int_triple.cs253count{|i| i%2 == 0},2
-        # assert_equal int_triple.cs253count(3),3
-    end
+    #     assert_equal int_triple.cs253each_slice(2){|i| print(i)},nil
+    #     # assert_equal int_triple.cs253count{|i| i%2 == 0},2
+    #     # assert_equal int_triple.cs253count(3),3
+    # end
 
     def test_each_cons
         int_triple = CS253Array.new([1, 2, 3, 4, 5, 6])
@@ -161,6 +163,7 @@ class CS253EnumTests < Minitest::Test
         assert_equal empty_obj.cs253find_index{|i| i>0 },nil
     end
 
+    #return nil
     def test_first
         int_triple = CS253Array.new([1, 2, 3, 4, 5, 6])
         str_triple = CS253Array.new(["dog", "bear", "parrot"])
@@ -168,17 +171,17 @@ class CS253EnumTests < Minitest::Test
 
         assert_equal int_triple.cs253first, 1
         assert_equal int_triple.cs253first(3),[1,2,3]
-        assert_equal empty_obj.cs253first,[]
+        # assert_equal empty_obj.cs253first,[]
     end
 
-    def test_flat_map
-        int_triple = CS253Array.new([1, 5, 3])
-        str_triple = CS253Array.new(["string", "dog", "food"])
+    # def test_flat_map
+    #     int_triple = CS253Array.new([1, 5, 3])
+    #     str_triple = CS253Array.new(["string", "dog", "food"])
 
-        assert_equal int_triple.cs253flat_map{|i| i*10},[1,10,5,50,3,30]
-        assert_equal int_triple.cs253flat_map{|i| i*2},[1,2,5,10,3,6]
-        assert_equal str_triple.cs253flat_map{|i| i.length},["string",6, "dog",3, "food",4]
-    end
+    #     assert_equal int_triple.cs253flat_map{|i| i*10},[1,10,5,50,3,30]
+    #     assert_equal int_triple.cs253flat_map{|i| i*2},[1,2,5,10,3,6]
+    #     assert_equal str_triple.cs253flat_map{|i| i.length},["string",6, "dog",3, "food",4]
+    # end
 
     def test_grep
         int_triple = CS253Array.new([1, 5, 3])
@@ -299,7 +302,7 @@ class CS253EnumTests < Minitest::Test
         str_triple = CS253Array.new(["string", "anotherString", "lastString","notThis"])
 
         assert_equal str_triple.cs253none?{|a| a.length <3},true
-        assert_equal str_triple.cs253none?,true
+        # assert_equal str_triple.cs253none?,true
         assert_equal str_triple.cs253none?{|a| a.length >8},false
     end
 
@@ -418,6 +421,7 @@ class CS253EnumTests < Minitest::Test
         assert_equal empty_obj.cs253uniq,[]
     end
 
+    #bad test suppose to return nil with no block
     def test_zip
         int_triple = CS253Array.new([1, 2, 3, 4, 5, 2])
         str_triple = CS253Array.new(["dog", "bear", "parrot"])
@@ -425,7 +429,7 @@ class CS253EnumTests < Minitest::Test
 
         assert_equal int_triple.cs253zip([1,1,1],[2,2,2]),[[1, 1, 2], [2, 1, 2], [3, 1, 2], [4, nil, nil], [5, nil, nil], [2, nil, nil]]
         assert_equal int_triple.cs253zip([1,1],[2,2,2,2,2,2]),[[1, 1, 2], [2, 1, 2], [3, nil, 2], [4, nil, 2], [5, nil, 2], [2, nil, 2]]
-        assert_equal obj.cs253zip([4,5,6]){|arr| arr[0] + arr[1] },[5,7,9]
+        # assert_equal obj.cs253zip([4,5,6]){|arr| arr[0] + arr[1] },[5,7,9]
     end
 
     def test_length
@@ -447,14 +451,15 @@ class CS253EnumTests < Minitest::Test
         assert_equal int_triple.cs253slice_when{|a,b| b-a > 1},[[1, 2, 3], [50], [60], [70]]
     end
 
-    def test_chunk
-        int_triple = CS253Array.new([1,2,3,50,60,70])
-        str_triple = CS253Array.new(['dog','food','apple','apple','ace'])
 
-        assert_equal int_triple.cs253chunk{|a| a.even?} ,[false,[1],true,[2],false,[3],true,[50,60,70]]
-        assert_equal str_triple.cs253chunk{|a| a.length == 3},[true,['dog'],false,['food','apple','apple'],true,['ace']]
-        assert_equal str_triple.cs253chunk{|a| a.length >80},[false,['dog','food','apple','apple','ace']]
-    end
+    # def test_chunk
+    #     int_triple = CS253Array.new([1,2,3,50,60,70])
+    #     str_triple = CS253Array.new(['dog','food','apple','apple','ace'])
+
+    #     assert_equal int_triple.cs253chunk{|a| a.even?} ,[false,[1],true,[2],false,[3],true,[50,60,70]]
+    #     assert_equal str_triple.cs253chunk{|a| a.length == 3},[true,['dog'],false,['food','apple','apple'],true,['ace']]
+    #     assert_equal str_triple.cs253chunk{|a| a.length >80},[false,['dog','food','apple','apple','ace']]
+    # end
 
     def test_chunk_while
         int_triple = CS253Array.new([1,2,3,5,6,7])
@@ -492,26 +497,30 @@ class CS253EnumTests < Minitest::Test
         assert_equal str_triple.cs253reverse_each{|i| i}.to_a,['ace','apple','food','dog']
     end
     
-    def test_sort_by
-        int_triple = CS253Array.new([1,2,3,5,6,7])
-        str_triple = CS253Array.new(['dog','food','apples'])
+    #bad test
+    # def test_sort_by
+    #     int_triple = CS253Array.new([1,2,3,5,6,7])
+    #     str_triple = CS253Array.new(['dog','food','apples'])
 
-        assert_equal int_triple.cs253sort_by{|i| i},[7,6,5,3,2,1]
-        assert_equal int_triple.cs253sort_by{|i| i*2},[7,6,5,3,2,1]
-        assert_equal str_triple.cs253sort_by{|i| i.length},['apples','food','dog']
-    end
+    #     assert_equal int_triple.cs253sort_by{|i| i},[7,6,5,3,2,1]
+    #     assert_equal int_triple.cs253sort_by{|i| i*2},[7,6,5,3,2,1]
+    #     assert_equal str_triple.cs253sort_by{|i| i.length},['apples','food','dog']
+    # end
 
-    def test_to_h
-        int_triple = CS253Array.new(['a','b'])
-        str_triple = CS253Array.new(['dog','food'])
-        int_triple2 = CS253Array.new([1,2])
+    #possibly wrong
+    # def test_to_h
+    #     int_triple = CS253Array.new(['a','b'])
+    #     str_triple = CS253Array.new(['dog','food'])
+    #     int_triple2 = CS253Array.new([1,2])
 
-        assert_equal int_triple.cs253to_h,{'a' => 0, 'b' => 1}
-        assert_equal int_triple2.cs253to_h,{1 => 0, 2 => 1}
-        assert_equal str_triple.cs253to_h,{'dog' => 0, 'food' => 1}
-    end
+    #     assert_equal int_triple.cs253to_h,{'a' => 0, 'b' => 1}
+    #     assert_equal int_triple2.cs253to_h,{1 => 0, 2 => 1}
+    #     assert_equal str_triple.cs253to_h,{'dog' => 0, 'food' => 1}
+    # end
 
 end
+
+
 
 
 
